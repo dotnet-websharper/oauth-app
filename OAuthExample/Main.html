@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>${Title}</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.3/css/all.css" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" />
     <style>
         /* Sticky footer styles */
@@ -57,10 +58,14 @@
         <div ws-template="PrivateLoggedInContent">
             <h1>Not logged in!</h1>
             <p>Sorry, you need to be logged in to access this page. You can log in with:</p>
-            <ul>
-                <li><a href="${GitHubLoginUrl}">GitHub</a></li>
-                <li><a href="${FacebookLoginUrl}">Facebook</a></li>
-            </ul>
+            <p>
+                <a href="${GitHubLoginUrl}" class="btn btn-primary">
+                    <i class="fab fa-github"></i> GitHub
+                </a>
+                <a href="${FacebookLoginUrl}" class="btn btn-primary">
+                    <i class="fab fa-facebook"></i> Facebook
+                </a>
+            </p>
         </div>
     </div>
     <footer class="footer">
