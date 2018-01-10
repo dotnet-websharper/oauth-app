@@ -36,6 +36,11 @@ module Auth =
             return! Content.RedirectTemporary EndPoint.Home
     }
 
+    let private getAppSetting (key: string) =
+        match System.Configuration.ConfigurationManager.AppSettings.[key] with
+        | null -> ""
+        | v -> v
+
     module GitHub =
 
         type private UserData = { login: string; name: string }
@@ -43,7 +48,7 @@ module Auth =
         /// The OAuth2 authorization provider for GitHub.
         let Provider =
             OAuth2.Provider.Setup(
-                service = OAuth2.ServiceSettings.Github("APP_ID", "APP_KEY"),
+                service = OAuth2.ServiceSettings.Github(getAppSetting "github-app-id", getAppSetting "github-app-secret"),
                 redirectEndpointAction = EndPoint.OAuth OAuthProvider.GitHub,
                 redirectEndpoint = redirectEndpoint (fun token -> async {
                     let! userData = JsonRequest<UserData> "https://api.github.com/user" token
@@ -62,7 +67,7 @@ module Auth =
         /// The OAuth2 authorization provider for Facebook.
         let Provider =
             OAuth2.Provider.Setup(
-                service = OAuth2.ServiceSettings.Facebook("APP_ID", "APP_KEY"),
+                service = OAuth2.ServiceSettings.Facebook(getAppSetting "facebook-app-id", getAppSetting "facebook-app-secret"),
                 redirectEndpointAction = EndPoint.OAuth OAuthProvider.Facebook,
                 redirectEndpoint = redirectEndpoint (fun token -> async {
                     let! userData = JsonRequest<UserData> "https://graph.facebook.com/me" token
