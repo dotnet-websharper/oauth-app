@@ -4,56 +4,9 @@ open WebSharper
 open WebSharper.Sitelets
 open WebSharper.UI
 open WebSharper.UI.Server
-
-type EndPoint =
-    | [<EndPoint "/">] Home
-    | [<EndPoint "/about">] About
-    | [<EndPoint "/oauth-github">] OAuthGitHub
-
-module Authentication =
-    open System.IO
-    open WebSharper.OAuth
-
-    type GithubUserData = { login: string }
-
-    /// Get basic user data from GitHub.
-    let getUserData (token: OAuth2.AuthenticationToken) =
-        async {
-            let req =
-                System.Net.HttpWebRequest.CreateHttp("https://api.github.com/user",
-                    KeepAlive = false,
-                    UserAgent = "WebSharper OAuthExample"
-                )
-            token.AuthorizeRequest(req)
-            let! response = req.AsyncGetResponse()
-            use reader = new StreamReader(response.GetResponseStream())
-            let! jsonData = reader.ReadToEndAsync() |> Async.AwaitTask
-            return WebSharper.Json.Deserialize<GithubUserData> jsonData
-        }
-
-    /// The OAuth2 authorization provider for GitHub.
-    let Provider =
-        OAuth2.Provider.Setup(
-            service = OAuth2.ServiceSettings.Github("APP_ID", "APP_SECRET"),
-            redirectEndpointAction = EndPoint.OAuthGitHub,
-            redirectEndpoint = (fun ctx response ->
-                async {
-                    match response with
-                    | OAuth2.Success token ->
-                        let! userData = getUserData token
-                        // All good! The user is authenticated.
-                        do! ctx.UserSession.LoginUser(userData.login)
-                        return! Content.RedirectTemporary EndPoint.About
-                    | _ ->
-                        // This is "normal" failure: the user simply rejected the authorization.
-                        do! ctx.UserSession.Logout()
-                        return! Content.RedirectTemporary EndPoint.Home
-                }
-            )
-        )
+open WebSharper.UI.Html
 
 module Templating =
-    open WebSharper.UI.Html
 
     type MainTemplate = Templating.Template<"Main.html">
 
@@ -65,7 +18,7 @@ module Templating =
              ]
         [
             "Home" => EndPoint.Home
-            "About" => EndPoint.About
+            "Private section" => EndPoint.Private
         ]
 
     let Main ctx action (title: string) (body: Doc list) =
@@ -78,42 +31,43 @@ module Templating =
         )
 
 module Site =
-    open WebSharper.UI.Html
 
     let HomePage ctx =
         Templating.Main ctx EndPoint.Home "Home" [
-            h1 [] [text "Say Hi to the server!"]
-            div [] [client <@ Client.Main() @>]
+            h1 [] [text "Welcome to the WebSharper OAuth sample app."]
+            p [] [text "Try to access the Private section to log in."]
         ]
 
-    let AboutPage (ctx: Context<EndPoint>) = async {
+    let PrivatePage (ctx: Context<EndPoint>) = async {
         let! loggedIn = ctx.UserSession.GetLoggedInUser()
-        match loggedIn with
-        | Some username ->
-            return! Templating.Main ctx EndPoint.About "About" [
-                h1 [] [text ("Welcome " + username)]
-                p [] [text "This is a template WebSharper client-server application."]
-            ]
-        | None ->
-            let loginUrl = Authentication.Provider.GetAuthorizationRequestUrl(ctx)
-            return! Templating.Main ctx EndPoint.About "About" [
-                h1 [] [text "Not logged in!"]
-                p [] [
-                    text "Sorry, you need to be logged in to access this page. "
-                    a [attr.href loginUrl] [text "Click here"]
-                    text " to log in."
-                ]
-            ]
+        let body =
+            match loggedIn |> Option.bind Database.TryGetUser with
+            | Some user ->
+                Templating.MainTemplate.PrivateNotLoggedInContent()
+                    .Username(user.DisplayName)
+                    .Doc()
+            | None ->
+                Templating.MainTemplate.PrivateLoggedInContent()
+                    .GitHubLoginUrl(Auth.GitHub.Provider.GetAuthorizationRequestUrl(ctx))
+                    .FacebookLoginUrl(Auth.Facebook.Provider.GetAuthorizationRequestUrl(ctx))
+                    .Doc()
+        return! Templating.Main ctx EndPoint.Private "Private section" [body]
+    }
+
+    let LogoutPage (ctx: Context<EndPoint>) = async {
+        do! ctx.UserSession.Logout()
+        return! Content.RedirectTemporary EndPoint.Home
     }
 
     [<Website>]
     let Main =
-        Authentication.Provider.RedirectEndpointSitelet
+        Auth.Sitelet
         <|>
         Application.MultiPage (fun ctx endpoint ->
             match endpoint with
             | EndPoint.Home -> HomePage ctx
-            | EndPoint.About -> AboutPage ctx
-            // This is already handled by RedirectEndpointSitelet above:
-            | EndPoint.OAuthGitHub -> Content.ServerError
+            | EndPoint.Private -> PrivatePage ctx
+            | EndPoint.Logout -> LogoutPage ctx
+            // This is already handled by Auth.Sitelet above:
+            | EndPoint.OAuth _ -> Content.ServerError
         )

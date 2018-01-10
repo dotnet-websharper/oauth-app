@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -48,8 +48,19 @@
             </div><!--/.nav-collapse -->
         </div>
     </nav>
-    <div class="container">
-        <div ws-replace="Body">
+    <div class="container" ws-hole="Body">
+        <div ws-template="PrivateNotLoggedInContent">
+            <h1>Welcome, ${Username}!</h1>
+            <p>This is your private page.</p>
+            <p><a href="/logout">Log out</a></p>
+        </div>
+        <div ws-template="PrivateLoggedInContent">
+            <h1>Not logged in!</h1>
+            <p>Sorry, you need to be logged in to access this page. You can log in with:</p>
+            <ul>
+                <li><a href="${GitHubLoginUrl}">GitHub</a></li>
+                <li><a href="${FacebookLoginUrl}">Facebook</a></li>
+            </ul>
         </div>
     </div>
     <footer class="footer">

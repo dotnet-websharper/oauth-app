@@ -104,8 +104,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="Remoting.fs" />
-    <Compile Include="Client.fs" />
+    <Compile Include="EndPoint.fs" />
+    <Compile Include="Database.fs" />
+    <Compile Include="Auth.fs" />
     <Compile Include="Main.fs" />
     <Content Include="Main.html" />
     <Content Include="Web.config" />
