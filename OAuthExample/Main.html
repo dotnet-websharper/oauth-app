@@ -39,7 +39,6 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">Your App</a>
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav" ws-hole="MenuBar"></ul>
@@ -50,6 +49,53 @@
         </div>
     </nav>
     <div class="container" ws-hole="Body">
+        <div ws-template="HomeContent">
+            <h1>Welcome to the WebSharper OAuth sample app!</h1>
+            <p>Try to access the Private section to log in.</p>
+            <div ws-attr="InstructionsAttr">
+                <hr />
+                <p>It seems that your OAuth providers are not configured properly.</p>
+                <p>To run this application, you need to set it up with the OAuth providers it uses: GitHub and Facebook.
+                    First you need to create an application on these services' websites, then you need to configure this application with the credentials they provide.</p>
+
+                <h2>Creating the GitHub application</h2>
+                <ul>
+                    <li>Go to the OAuth application creation page in <a href="https://github.com/settings/applications/new">your GitHub developer settings</a>.</li>
+                    <li>Choose an application name, a homepage URL and a description.</li>
+                    <li>The authorization callback URL must be <code>http://&lt;this-app&gt;/oauth/GitHub</code>.<br />
+                        For example, for a local test from Visual Studio, this will be <code>http://localhost:56385/oauth/GitHub</code>.</li>
+                    <li>Click "Register application". You will be sent to a page where you can retrieve your application's credentials ("Client ID" and "Client Secret").</li>
+                </ul>
+
+                <h2>Creating the Facebook application</h2>
+                <ul>
+                    <li>Go to <a href="https://developers.facebook.com/">your Facebook developer page</a>, then in the top-right menu "My Apps", choose "Add a New App".</li>
+                    <li>Choose a display name and a contact email, then Create App ID.</li>
+                    <li>You are sent to your new app's "Add Product" page; select Facebook Login > Set Up.</li>
+                    <li>You can go through the Quickstart wizard, or if you want to set up the bare necessary, you can select Facebook Login > Settings in the left menu,
+                        enter the authorization callback URL under "Valid OAuth redirect URIs" and Save Changes.</li>
+                    <li>The authorization callback URL must be <code>http://&lt;this-app&gt;/oauth/Facebook</code>.<br />
+                        For example, for a local test from Visual Studio, this will be <code>http://localhost:56385/oauth/Facebook</code>.</li>
+                    <li>Your credentials are available under Settings: "App ID" and "App Secret".</li>
+                </ul>
+
+                <h2>Setting the credentials in the app</h2>
+                <p>The app retrieves the credentials from standard AppSettings configuration.
+                    Since they are sensitive information, you should not put them directly in Web.config, and in any case, you should NOT commit them to source control!</p>
+                <p>The first solution is to create a file called <code>appSettings.config</code> in the <code>OAuthExample</code> folder and fill it with the following:</p>
+                <pre>
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;appSettings&gt;
+  &lt;add key="github-app-id" value="FIXME" /&gt;
+  &lt;add key="github-app-secret" value="FIXME" /&gt;
+  &lt;add key="facebook-app-id" value="FIXME" /&gt;
+  &lt;add key="facebook-app-secret" value="FIXME" /&gt;
+&lt;/appSettings&gt;</pre>
+                <p>If you deployed your application to Azure, then there is an alternative possibility. In the <a href="https://portal.azure.com">Azure portal</a>,
+                    you can add Application Settings to your deployment.</p>
+                <img title="Screenshot: AppSettings in Azure Portal" src="img/azure-app-settings.png" style="max-width: 100%;" />
+            </div>
+        </div>
         <div ws-template="PrivateNotLoggedInContent">
             <h1>Welcome, ${Username}!</h1>
             <p>This is your private page.</p>

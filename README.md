@@ -1,10 +1,12 @@
 # WebSharper OAuth2 Sample
 
+[![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://azuredeploy.net/)
+
 This sample application shows how to provide "Log in with..." functionality to a [WebSharper](https://websharper.com) website using OAuth2.
 
-![Screenshot: Application when not logged in](img/not-logged-in.png)
+![Screenshot: Application when not logged in](OAuthExample/img/not-logged-in.png)
 
-![Screenshot: Application when logged in](img/logged-in.png)
+![Screenshot: Application when logged in](OAuthExample/img/logged-in.png)
 
 ## Building
 
@@ -56,6 +58,6 @@ The first solution is to create a file called `appSettings.config` in the `OAuth
 </appSettings>
 ```
 
-If you deploy your application to Azure, then there is an alternative possibility. In the Azure portal, you can add Application Settings to your deployment.
+If you deploy your application to Azure, then there is an alternative possibility. In the [Azure portal](https://portal.azure.com), you can add Application Settings to your deployment.
 
-![Screenshot: AppSettings in Azure Portal](img/azure-app-settings.png)
+![Screenshot: AppSettings in Azure Portal](OAuthExample/img/azure-app-settings.png)

@@ -8,7 +8,7 @@ open WebSharper.UI.Html
 
 module Templating =
 
-    type MainTemplate = Templating.Template<"Main.html">
+    type MainTemplate = Templating.Template<"Main.html", serverLoad = Templating.ServerLoad.WhenChanged>
 
     // Compute a menubar where the menu item for the given endpoint is active
     let MenuBar (ctx: Context<EndPoint>) endpoint : Doc list =
@@ -34,8 +34,9 @@ module Site =
 
     let HomePage ctx =
         Templating.Main ctx EndPoint.Home "Home" [
-            h1 [] [text "Welcome to the WebSharper OAuth sample app."]
-            p [] [text "Try to access the Private section to log in."]
+            Templating.MainTemplate.HomeContent()
+                .InstructionsAttr(if Auth.IsConfigured then attr.``class`` "hidden" else Attr.Empty)
+                .Doc()
         ]
 
     let PrivatePage (ctx: Context<EndPoint>) = async {

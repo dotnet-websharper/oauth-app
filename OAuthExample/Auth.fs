@@ -45,10 +45,12 @@ module Auth =
 
         type private UserData = { login: string; name: string }
 
+        let service = OAuth2.ServiceSettings.Github(getAppSetting "github-app-id", getAppSetting "github-app-secret")
+
         /// The OAuth2 authorization provider for GitHub.
         let Provider =
             OAuth2.Provider.Setup(
-                service = OAuth2.ServiceSettings.Github(getAppSetting "github-app-id", getAppSetting "github-app-secret"),
+                service = service,
                 redirectEndpointAction = EndPoint.OAuth OAuthProvider.GitHub,
                 redirectEndpoint = redirectEndpoint (fun token -> async {
                     let! userData = JsonRequest<UserData> "https://api.github.com/user" token
@@ -64,10 +66,12 @@ module Auth =
 
         type private UserData = { id: string; name: string }
 
+        let service = OAuth2.ServiceSettings.Facebook(getAppSetting "facebook-app-id", getAppSetting "facebook-app-secret")
+
         /// The OAuth2 authorization provider for Facebook.
         let Provider =
             OAuth2.Provider.Setup(
-                service = OAuth2.ServiceSettings.Facebook(getAppSetting "facebook-app-id", getAppSetting "facebook-app-secret"),
+                service = service,
                 redirectEndpointAction = EndPoint.OAuth OAuthProvider.Facebook,
                 redirectEndpoint = redirectEndpoint (fun token -> async {
                     let! userData = JsonRequest<UserData> "https://graph.facebook.com/me" token
@@ -84,3 +88,12 @@ module Auth =
         GitHub.Provider.RedirectEndpointSitelet
         <|>
         Facebook.Provider.RedirectEndpointSitelet
+
+    /// Sanity check for the purpose of demonstration:
+    /// if this is false, then the providers aren't configured properly,
+    /// so we show instructions on the home page.
+    let IsConfigured =
+        GitHub.service.ClientId <> "" &&
+        GitHub.service.ClientSecret <> "" &&
+        Facebook.service.ClientId <> "" &&
+        Facebook.service.ClientSecret <> ""
