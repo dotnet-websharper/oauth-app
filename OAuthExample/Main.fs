@@ -19,7 +19,7 @@ module Templating =
         [
             "Home" => EndPoint.Home
             "Private section" => EndPoint.Private
-            "My repositories" => EndPoint.Repos // <- new
+            "My repositories" => EndPoint.Repos
         ]
 
     let Main ctx action (title: string) (body: Doc list) =
