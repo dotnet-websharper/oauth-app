@@ -32,6 +32,12 @@ module Templating =
 
 module Site =
 
+    let NotLoggedInErrorMessage (ctx: Context<EndPoint>) =
+        Templating.MainTemplate.PrivateLoggedInContent()
+            .GitHubLoginUrl(Auth.GitHub.Provider.GetAuthorizationRequestUrl(ctx))
+            .FacebookLoginUrl(Auth.Facebook.Provider.GetAuthorizationRequestUrl(ctx))
+            .Doc()
+
     let HomePage ctx =
         Templating.Main ctx EndPoint.Home "Home" [
             Templating.MainTemplate.HomeContent()
@@ -48,10 +54,7 @@ module Site =
                     .Username(user.DisplayName)
                     .Doc()
             | None ->
-                Templating.MainTemplate.PrivateLoggedInContent()
-                    .GitHubLoginUrl(Auth.GitHub.Provider.GetAuthorizationRequestUrl(ctx))
-                    .FacebookLoginUrl(Auth.Facebook.Provider.GetAuthorizationRequestUrl(ctx))
-                    .Doc()
+                NotLoggedInErrorMessage ctx
         return! Templating.Main ctx EndPoint.Private "Private section" [body]
     }
 
