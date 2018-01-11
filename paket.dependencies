@@ -1,0 +1,8 @@
+source https://nuget.org/api/v2/
+framework: net461
+
+nuget FSharp.Core
+nuget WebSharper
+nuget WebSharper.FSharp
+nuget WebSharper.OAuth
+nuget WebSharper.UI

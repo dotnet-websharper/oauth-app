@@ -1,0 +1,11 @@
+RESTRICTION: == net461
+NUGET
+  remote: https://www.nuget.org/api/v2
+    FSharp.Core (4.2.3)
+    WebSharper (4.1.1.175)
+    WebSharper.FSharp (4.1.1.175)
+      WebSharper (4.1.1.175)
+    WebSharper.OAuth (4.1.18.104)
+      WebSharper (>= 4.1.1.175)
+    WebSharper.UI (4.1.0.38)
+      WebSharper (>= 4.1.1.175)
