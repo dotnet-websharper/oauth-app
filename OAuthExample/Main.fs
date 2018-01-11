@@ -19,6 +19,7 @@ module Templating =
         [
             "Home" => EndPoint.Home
             "Private section" => EndPoint.Private
+            "My repositories" => EndPoint.Repos // <- new
         ]
 
     let Main ctx action (title: string) (body: Doc list) =
@@ -58,6 +59,38 @@ module Site =
         return! Templating.Main ctx EndPoint.Private "Private section" [body]
     }
 
+    let ReposPage (ctx: Context<EndPoint>) = async {
+        let! loggedIn = ctx.UserSession.GetLoggedInUser()
+        let! body = async {
+            match loggedIn |> Option.bind Database.TryGetUser with
+            | Some user ->
+                // If we are logged in...
+                match user.OAuthUserId with
+                | OAuthProvider.GitHub, githubUserId ->
+                    // ... with GitHub, then get the repositories and display them.
+                    let! repositories = Repositories.GetUserRepositories user.OAuthToken
+                    return Doc.Concat [
+                        h1 [] [text (user.DisplayName + "'s GitHub repositories")]
+                        ul [] [
+                            repositories
+                            |> Array.map (fun repo ->
+                                li [] [
+                                    a [attr.href (sprintf "https://github.com/%s/%s" githubUserId repo.html_url)] [text repo.name]
+                                ] :> Doc
+                            )
+                            |> Doc.Concat
+                        ]
+                    ]
+                | _ ->
+                    // ... with Facebook, then show an error message.
+                    return p [] [text "You must be logged in with GitHub to see this content."] :> Doc
+            | None ->
+                // If we are not logged in, then show an error message.
+                return NotLoggedInErrorMessage ctx
+        }
+        return! Templating.Main ctx EndPoint.Private "My GitHub repositories" [body]
+    }
+
     let LogoutPage (ctx: Context<EndPoint>) = async {
         do! ctx.UserSession.Logout()
         return! Content.RedirectTemporary EndPoint.Home
@@ -72,6 +105,7 @@ module Site =
             | EndPoint.Home -> HomePage ctx
             | EndPoint.Private -> PrivatePage ctx
             | EndPoint.Logout -> LogoutPage ctx
+            | EndPoint.Repos -> ReposPage ctx
             // This is already handled by Auth.Sitelet above:
             | EndPoint.OAuth _ -> Content.ServerError
         )

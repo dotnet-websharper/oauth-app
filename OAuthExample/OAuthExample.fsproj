@@ -53,6 +53,7 @@
     <Compile Include="EndPoint.fs" />
     <Compile Include="Database.fs" />
     <Compile Include="Auth.fs" />
+    <Compile Include="Repositories.fs" />
     <Compile Include="Main.fs" />
     <Content Include="Main.html" />
     <Content Include="img/azure-app-settings.png" />
