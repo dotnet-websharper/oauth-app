@@ -110,10 +110,8 @@
     <Compile Include="Auth.fs" />
     <Compile Include="Main.fs" />
     <Content Include="Main.html" />
+    <Content Include="img/azure-app-settings.png" />
     <Content Include="Web.config" />
-    <Content Include="Global.asax" />
-    <Compile Include="Global.asax.fs" />
-    <Content Include="Setup.fsx" />
     <None Include="packages.config" />
   </ItemGroup>
   <Target Name="IncludeContent" BeforeTargets="Compile">
