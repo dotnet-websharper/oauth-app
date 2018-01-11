@@ -8,17 +8,19 @@ This sample application shows how to provide "Log in with..." functionality to a
 
 ![Screenshot: Application when logged in](OAuthExample/img/logged-in.png)
 
+## Table of contents
+
 * [Building](#building)
 * [Configuration](#config)
 * [Code walkthrough](#walkthrough)
 * [Extending the app](#extending)
 
-<a name="building"/>
+<a name="building"></a>
 ## Building
 
-This project can be readily opened and built with Visual Studio.
+This project can be readily opened and built with Visual Studio. It uses [Paket](https://fsprojects.github.io/Paket/) for package management and a standard MSBuild system.
 
-<a name="config"/>
+<a name="config"></a>
 ## Configuration
 
 To run this application, you need to set it up with the OAuth providers it uses: GitHub and Facebook. First you need to create an application on these services' websites, then you need to configure this application with the credentials they provide.
@@ -69,7 +71,7 @@ If you deploy your application to Azure, then there is an alternative possibilit
 
 ![Screenshot: AppSettings in Azure Portal](OAuthExample/img/azure-app-settings.png)
 
-<a name="walkthrough"/>
+<a name="walkthrough"></a>
 # Code Walkthrough
 
 The code is structured as follows:
@@ -105,7 +107,7 @@ The code is structured as follows:
 
     `PrivatePage` is of particular interest. First, it uses `ctx.UserSession.GetLoggedInUser()` to check whether the user is logged in and determine what content to serve. When they aren't, it needs to show links to log in using GitHub or Facebook. The URL is given by the corresponding `Provider.GetAuthorizationRequestUrl(ctx)`.
 
-<a name="extending"/>
+<a name="extending"></a>
 # Extending the app
 
 To get a better grasp on it all, let's add a page to this website. This page will retrieve and show a list of the user's repositories if they are logged in with GitHub, or a small error message if they are logged in with Facebook or not logged in.
