@@ -57,7 +57,10 @@ module Auth =
                     return {
                         OAuthUserId = OAuthProvider.GitHub, userData.login
                         OAuthToken = token
-                        DisplayName = userData.name
+                        DisplayName =
+                            match userData.name with
+                            | null -> userData.login
+                            | name -> name
                     }
                 })
             )
