@@ -63,6 +63,9 @@ module Site =
         return! Content.RedirectTemporary EndPoint.Home
     }
 
+    // Force using TLS 1.2 for HTTPS requests, because GitHub's API requires it.
+    do System.Net.ServicePointManager.SecurityProtocol <- System.Net.SecurityProtocolType.Tls12
+
     [<Website>]
     let Main =
         Auth.Sitelet
